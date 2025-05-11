@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom scrollbar styles for all scrollable areas */
+::-webkit-scrollbar {
+  width: 10px;
+  background: #18181b;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #f97316 0%, #6366f1 100%);
+  border-radius: 8px;
+  min-height: 40px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #fbbf24 0%, #a78bfa 100%);
+}
+
+::-webkit-scrollbar-corner {
+  background: #18181b;
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #f97316 #18181b;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+*:focus-visible {
+  outline: 2px solid #f97316;
+  outline-offset: 2px;
+}

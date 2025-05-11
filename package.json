@@ -1,0 +1,66 @@
+{
+  "name": "time-tracking-app",
+  "version": "1.0.0",
+  "description": "Desktop time tracking app with React, Tailwind, Vite, and Electron",
+  "main": "electron.cjs",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "npm run clean && vite build",
+    "preview": "vite preview",
+    "electron": "electron .",
+    "start": "vite & electron .",
+    "gen:icon": "iconutil --convert icns --output assets/icon.icns assets/icon.iconset",
+    "build:mac": "npm run gen:icon && electron-builder --mac",
+    "build:win": "convert assets/icon_16x16.png assets/icon_32x32.png assets/icon_48x48.png assets/icon_256x256.png assets/icon.ico && electron-builder --win",
+    "dist": "npm run gen:icon && convert assets/icon_16x16.png assets/icon_32x32.png assets/icon_48x48.png assets/icon_256x256.png assets/icon.ico && electron-builder",
+    "clean": "rm -rf build"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-icons": "^5.5.0",
+    "react-router-dom": "^6.30.0",
+    "recharts": "^2.15.3",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.27.2",
+    "@babel/preset-react": "^7.27.1",
+    "@vitejs/plugin-react": "^4.4.1",
+    "autoprefixer": "^10.4.21",
+    "electron": "^36.1.0",
+    "electron-builder": "^26.0.12",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^3.4.17",
+    "vite": "^4.5.14"
+  },
+  "build": {
+    "appId": "xyz.onlinedesk.timetracker",
+    "productName": "MyTimeTracker",
+    "directories": {
+      "buildResources": "assets"
+    },
+    "extraResources": [
+      {
+        "from": "assets/tray_icon.png",
+        "to": "assets/tray_icon.png"
+      }
+    ],
+    "files": [
+      "build/**/*",
+      "electron.cjs",
+      "preload.cjs",
+      "assets/**/*"
+    ],
+    "mac": {
+      "icon": "assets/icon.icns"
+    },
+    "win": {
+      "icon": "assets/icon.ico"
+    },
+    "linux": {
+      "icon": "assets/icon_256x256.png"
+    }
+  }
+}
