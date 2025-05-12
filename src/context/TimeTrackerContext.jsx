@@ -82,6 +82,37 @@ export const TimeTrackerProvider = ({ children }) => {
     return () => clearTimeout(timeoutId);
   }, [projects, tasks, settings]);
 
+  // Listen for stop-all-sessions event from main process
+  useEffect(() => {
+    function handleStopAllSessions() {
+      setSessions((prev) =>
+        prev.map((s) =>
+          !s.endTime ? { ...s, endTime: new Date().toISOString() } : s
+        )
+      );
+      setTasks((prev) =>
+        prev.map((t) =>
+          t.isRunning ? { ...t, isRunning: false } : t
+        )
+      );
+    }
+    if (window.electronAPI && window.electronAPI.onStopAllSessions) {
+      window.electronAPI.onStopAllSessions(handleStopAllSessions);
+    } else if (window.require) {
+      // For older preload, fallback to ipcRenderer
+      const { ipcRenderer } = window.require('electron');
+      ipcRenderer.on('time-tracker:stop-all-sessions', handleStopAllSessions);
+    }
+    return () => {
+      if (window.electronAPI && window.electronAPI.removeStopAllSessions) {
+        window.electronAPI.removeStopAllSessions(handleStopAllSessions);
+      } else if (window.require) {
+        const { ipcRenderer } = window.require('electron');
+        ipcRenderer.removeListener('time-tracker:stop-all-sessions', handleStopAllSessions);
+      }
+    };
+  }, []);
+
   const addProject = (name) => {
     if (!name.trim()) {
       console.error('Project name cannot be empty');
