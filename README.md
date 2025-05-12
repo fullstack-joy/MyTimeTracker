@@ -136,6 +136,37 @@ To generate the required `icon.iconset` and `icon.icns` for macOS:
 
 ---
 
+## Windows Build Error: `convert: command not found`
+
+The error means the `convert` command (from [ImageMagick](https://imagemagick.org/)) is not installed on your system.  
+This command is used to generate a Windows `.ico` icon file from PNGs before building the Electron app.
+
+### How to fix
+
+1. **Install ImageMagick:**
+
+   - Download and install from: https://imagemagick.org/script/download.php#windows
+   - During installation, check the box to "Install legacy utilities (e.g., convert)".
+
+2. **Verify installation:**
+
+   Open a new terminal and run:
+   ```
+   convert --version
+   ```
+   If you see version info, it's installed.
+
+3. **Re-run your build:**
+   ```
+   npm run build:win
+   ```
+
+---
+
+**If you already have an `assets/icon.ico` file, you can skip the `convert` step and just run:**
+
+---
+
 ## Making a Release
 
 To create a production-ready release of TimeTracker:

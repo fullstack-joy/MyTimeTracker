@@ -12,7 +12,7 @@
     "start": "vite & electron .",
     "gen:icon": "iconutil --convert icns --output assets/icon.icns assets/icon.iconset",
     "build:mac": "npm run gen:icon && electron-builder --mac",
-    "build:win": "convert assets/icon_16x16.png assets/icon_32x32.png assets/icon_48x48.png assets/icon_256x256.png assets/icon.ico && electron-builder --win",
+    "build:win": "electron-builder --win",
     "dist": "npm run gen:icon && convert assets/icon_16x16.png assets/icon_32x32.png assets/icon_48x48.png assets/icon_256x256.png assets/icon.ico && electron-builder",
     "clean": "rm -rf build"
   },
