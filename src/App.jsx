@@ -101,7 +101,7 @@ export default function App() {
         (!isMac && e.ctrlKey && e.altKey && e.key.toLowerCase() === 'i')
       ) {
         if (window.electronAPI?.openDevTools) {
-          window.electronAPI.openDevTools('left');
+          window.electronAPI.openDevTools('right');
         }
       }
     };
