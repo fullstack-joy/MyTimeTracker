@@ -17,5 +17,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onScreenshotError: (cb) => ipcRenderer.on('time-tracker:screenshot-error', (_, err) => cb(err)),
   listScreenshots: () => ipcRenderer.invoke('time-tracker:list-screenshots'),
   deleteScreenshot: (filePath) => ipcRenderer.invoke('time-tracker:delete-screenshot', filePath),
-  openDevTools: (mode = 'left') => ipcRenderer.send('open-devtools', mode),
+  openDevTools: (mode = 'right') => ipcRenderer.send('open-devtools', mode),
+  onStopAllSessions: (cb) => ipcRenderer.on('time-tracker:stop-all-sessions', cb),
+  removeStopAllSessions: (cb) => ipcRenderer.removeListener('time-tracker:stop-all-sessions', cb),
 });

@@ -7,8 +7,8 @@ let tray = null;
 let mainWindow = null;
 app.isQuiting = false;
 
-// Directory where screenshots are saved
-const screenshotsDir = path.join(os.homedir(), 'TimeTrackerScreenshots');
+// Use Electron's userData path for screenshots (works in production)
+const screenshotsDir = path.join(app.getPath('userData'), 'TimeTrackerScreenshots');
 
 async function ensureDir() {
   try {
@@ -141,6 +141,14 @@ app.on('window-all-closed', (event) => {
   }
 });
 
+// Notify the renderer to stop all running sessions before quit
+app.on('before-quit', (event) => {
+  if (mainWindow && mainWindow.webContents) {
+    // Send a message to renderer to stop all sessions
+    mainWindow.webContents.send('time-tracker:stop-all-sessions');
+  }
+});
+
 app.on('will-quit', () => {
   globalShortcut.unregisterAll();
 });
@@ -193,7 +201,7 @@ ipcMain.handle('time-tracker:delete-screenshot', async (event, filePath) => {
 });
 
 // IPC: Open DevTools
-ipcMain.on('open-devtools', (event, mode = 'left') => {
+ipcMain.on('open-devtools', (event, mode = 'right') => {
   if (mainWindow && mainWindow.webContents) {
     mainWindow.webContents.openDevTools({ mode });
   }
