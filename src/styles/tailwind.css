@@ -3,29 +3,57 @@
 @tailwind utilities;
 
 /* Custom scrollbar styles for all scrollable areas */
+/* Light mode scrollbar */
 ::-webkit-scrollbar {
-  width: 10px;
-  background: #18181b;
+  width: 12px;
+  background: #e5e7eb; /* Light gray track for light mode */
 }
 
 ::-webkit-scrollbar-thumb {
   background: linear-gradient(135deg, #f97316 0%, #6366f1 100%);
-  border-radius: 8px;
+  border-radius: 10px;
   min-height: 40px;
+  border: 2px solid #e5e7eb; /* Light gray border for light mode */
+  background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(135deg, #fbbf24 0%, #a78bfa 100%);
+  border-color: #d1d5db; /* Slightly darker light gray border on hover */
 }
 
 ::-webkit-scrollbar-corner {
-  background: #18181b;
+  background: #e5e7eb; /* Light gray corner for light mode */
+}
+
+/* Dark mode scrollbar overrides */
+.dark ::-webkit-scrollbar {
+  background: #18181b; /* Dark track for dark mode */
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  border-color: #18181b; /* Dark border for dark mode */
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  border-color: #27272a; /* Slightly lighter dark border on hover */
+}
+
+.dark ::-webkit-scrollbar-corner {
+  background: #18181b; /* Dark corner for dark mode */
 }
 
 /* For Firefox */
+/* Light mode Firefox scrollbar */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #f97316 #18181b;
+  scrollbar-color: #f97316 #e5e7eb; /* thumb color, track color for light mode */
+}
+
+/* Dark mode Firefox scrollbar */
+.dark * {
+  scrollbar-width: thin;
+  scrollbar-color: #f97316 #18181b; /* thumb color, track color for dark mode */
 }
 
 html {
