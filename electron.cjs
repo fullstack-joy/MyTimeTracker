@@ -49,7 +49,7 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.cjs'),
       contextIsolation: true,
       nodeIntegration: false,
-      webSecurity: false
+      webSecurity: true, // MODIFIED: Set to true for better security
     }
   });
 
@@ -143,10 +143,12 @@ app.on('window-all-closed', (event) => {
 
 // Notify the renderer to stop all running sessions before quit
 app.on('before-quit', (event) => {
-  if (mainWindow && mainWindow.webContents) {
+  app.isQuiting = true; // Set this flag immediately when the app is about to quit
+  if (mainWindow && mainWindow.webContents && !mainWindow.isDestroyed()) {
     // Send a message to renderer to stop all sessions
     mainWindow.webContents.send('time-tracker:stop-all-sessions');
   }
+  // No event.preventDefault() here, so the app continues its quit sequence.
 });
 
 app.on('will-quit', () => {
