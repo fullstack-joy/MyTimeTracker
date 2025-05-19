@@ -129,100 +129,102 @@ export default function Reports() {
   }, [detailsProject, projects, tasks]);
 
   return (
-    <div className="p-6 text-white bg-black min-h-screen">
-      <h1 className="text-2xl font-bold mb-6">Reports</h1>
+    <div className="text-gray-900 dark:text-white bg-white dark:bg-black flex flex-col h-full"> {/* MODIFIED: Removed p-6 */}
+      <h1 className="text-2xl font-bold mb-6 flex-shrink-0 px-6 pt-6">Reports</h1> {/* MODIFIED: Added px-6 pt-6 here */}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-[#1f1f1f] p-4 rounded-xl shadow">
-          <div className="text-sm text-gray-400 mb-1">Total Hours</div>
-          <div className="text-2xl font-bold">{summary.totalHours} hr</div>
-        </div>
-        <div className="bg-[#1f1f1f] p-4 rounded-xl shadow">
-          <div className="text-sm text-gray-400 mb-1">Top Project</div>
-          <div className="text-lg font-semibold">{summary.topProject}</div>
-        </div>
-      </div>
-
-      <div className="bg-[#1f1f1f] p-5 rounded-xl shadow">
-        <h2 className="text-lg font-semibold mb-4">Project Breakdown</h2>
-        <table className="w-full text-left text-sm text-gray-300">
-          <thead className="border-b border-gray-600 text-gray-400">
-            <tr>
-              <th className="pb-2">Project</th>
-              <th className="pb-2">Total Time</th>
-              <th className="pb-2">Status</th>
-              <th className="pb-2"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {paginatedProjects.map((project, idx) => (
-              <tr key={idx} className="border-b border-gray-800 hover:bg-gray-800/40 transition">
-                <td className="py-3">{project.project}</td>
-                <td className="py-3">{project.hours} hr</td>
-                <td className="py-3">
-                  {project.completed ? (
-                    <span className="text-green-400 font-semibold">Completed</span>
-                  ) : (
-                    <span className="text-orange-400 font-semibold">Active</span>
-                  )}
-                </td>
-                <td className="py-3">
-                  <button
-                    className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded text-xs"
-                    onClick={() => setDetailsProject(project.project)}
-                  >
-                    Details
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {/* Pagination controls */}
-        {totalPages > 1 && (
-          <div className="flex justify-center items-center gap-2 mt-6">
-            <button
-              className="px-3 py-1 rounded bg-gray-800 text-white disabled:opacity-50"
-              onClick={() => setPage(page - 1)}
-              disabled={page === 1}
-            >
-              Prev
-            </button>
-            <span className="text-sm text-gray-300">
-              Page {page} of {totalPages}
-            </span>
-            <button
-              className="px-3 py-1 rounded bg-gray-800 text-white disabled:opacity-50"
-              onClick={() => setPage(page + 1)}
-              disabled={page === totalPages}
-            >
-              Next
-            </button>
+      <div className="flex-grow overflow-y-auto p-6"> {/* MODIFIED: Added p-6 here */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="bg-gray-100 dark:bg-[#1f1f1f] p-4 rounded-xl shadow">
+            <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Total Hours</div>
+            <div className="text-2xl font-bold text-gray-800 dark:text-white">{summary.totalHours} hr</div>
           </div>
-        )}
-      </div>
+          <div className="bg-gray-100 dark:bg-[#1f1f1f] p-4 rounded-xl shadow">
+            <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Top Project</div>
+            <div className="text-lg font-semibold text-gray-800 dark:text-white">{summary.topProject}</div>
+          </div>
+        </div>
 
-      {/* Details Modal */}
+        <div className="bg-gray-100 dark:bg-[#1f1f1f] p-5 rounded-xl shadow">
+          <h2 className="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Project Breakdown</h2>
+          <table className="w-full text-left text-sm text-gray-700 dark:text-gray-300">
+            <thead className="border-b border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400">
+              <tr>
+                <th className="pb-2">Project</th>
+                <th className="pb-2">Total Time</th>
+                <th className="pb-2">Status</th>
+                <th className="pb-2"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {paginatedProjects.map((project, idx) => (
+                <tr key={idx} className="border-b border-gray-200 dark:border-gray-800 hover:bg-gray-200/40 dark:hover:bg-gray-800/40 transition">
+                  <td className="py-3">{project.project}</td>
+                  <td className="py-3">{project.hours} hr</td>
+                  <td className="py-3">
+                    {project.completed ? (
+                      <span className="text-green-400 font-semibold">Completed</span>
+                    ) : (
+                      <span className="text-orange-400 font-semibold">Active</span>
+                    )}
+                  </td>
+                  <td className="py-3">
+                    <button
+                      className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded text-xs"
+                      onClick={() => setDetailsProject(project.project)}
+                    >
+                      Details
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {/* Pagination controls */}
+          {totalPages > 1 && (
+            <div className="flex justify-center items-center gap-2 mt-6">
+              <button
+                className="px-3 py-1 rounded bg-gray-300 dark:bg-gray-800 text-gray-800 dark:text-white disabled:opacity-50"
+                onClick={() => setPage(page - 1)}
+                disabled={page === 1}
+              >
+                Prev
+              </button>
+              <span className="text-sm text-gray-600 dark:text-gray-300">
+                Page {page} of {totalPages}
+              </span>
+              <button
+                className="px-3 py-1 rounded bg-gray-300 dark:bg-gray-800 text-gray-800 dark:text-white disabled:opacity-50"
+                onClick={() => setPage(page + 1)}
+                disabled={page === totalPages}
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+      {/* Details Modal is outside the scrollable area, which is fine as it's position:fixed */}
       {detailsProject && projectDetails && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-          <div className="bg-[#23232b] rounded-lg shadow-lg w-full max-w-2xl p-6 relative max-h-[90vh] overflow-y-auto">
+          <div className="bg-gray-100 dark:bg-[#23232b] rounded-lg shadow-lg w-full max-w-2xl p-6 relative max-h-[90vh] overflow-y-auto">
             <button
-              className="absolute top-2 right-3 text-gray-400 hover:text-white text-2xl"
+              className="absolute top-2 right-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white text-2xl"
               onClick={() => setDetailsProject(null)}
               title="Close"
+              aria-label="Close project details"
             >
               &times;
             </button>
-            <h3 className="text-xl font-bold mb-4 text-orange-400">{detailsProject} - Details</h3>
+            <h3 className="text-xl font-bold mb-4 text-orange-500 dark:text-orange-400">{detailsProject} - Details</h3>
             <div className="mb-4">
-              <div className="font-semibold text-sm mb-2">Total Hours Worked</div>
-              <div className="text-lg text-orange-400 font-bold mb-2">
+              <div className="font-semibold text-sm mb-2 text-gray-700 dark:text-gray-300">Total Hours Worked</div>
+              <div className="text-lg text-orange-500 dark:text-orange-400 font-bold mb-2">
                 {(projectDetails.totalSeconds / 3600).toFixed(2)} hr
               </div>
             </div>
             <div className="mb-4">
-              <div className="font-semibold text-sm mb-2">Tracked Sessions</div>
-              <ul className="space-y-2 text-xs text-gray-300 max-h-40 overflow-y-auto">
+              <div className="font-semibold text-sm mb-2 text-gray-700 dark:text-gray-300">Tracked Sessions</div>
+              <ul className="space-y-2 text-xs text-gray-600 dark:text-gray-300 max-h-40 overflow-y-auto">
                 {projectDetails.projectSessions.map((session, idx) => {
                   const task = tasks.find(t => t.id === session.taskId);
                   const start = new Date(session.startTime);
@@ -231,9 +233,9 @@ export default function Reports() {
                     ? ((end - start) / 3600 / 1000).toFixed(2)
                     : ((Date.now() - start) / 3600 / 1000).toFixed(2);
                   return (
-                    <li key={idx} className="flex justify-between border-b border-gray-700 pb-1">
+                    <li key={idx} className="flex justify-between border-b border-gray-300 dark:border-gray-700 pb-1">
                       <span>
-                        {task ? task.title : 'Unknown Task'}<span className="ml-2 text-gray-500">{start.toLocaleString()}</span>
+                        {task ? task.title : 'Unknown Task'}<span className="ml-2 text-gray-500 dark:text-gray-500">{start.toLocaleString()}</span>
                       </span>
                       <span>{duration} hr</span>
                     </li>
@@ -242,9 +244,9 @@ export default function Reports() {
               </ul>
             </div>
             <div className="mb-4">
-              <div className="font-semibold text-sm mb-2">Screenshots</div>
+              <div className="font-semibold text-sm mb-2 text-gray-700 dark:text-gray-300">Screenshots</div>
               {projectScreenshots.length === 0 ? (
-                <div className="text-xs text-gray-500 italic">No screenshots found.</div>
+                <div className="text-xs text-gray-500 dark:text-gray-500 italic">No screenshots found.</div>
               ) : (
                 <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto">
                   {projectScreenshots.map((file, idx) => (
@@ -259,7 +261,7 @@ export default function Reports() {
                       <img
                         src={`file://${file}`}
                         alt="Screenshot"
-                        className="w-20 h-14 object-cover rounded border border-gray-700 hover:scale-105 transition"
+                        className="w-20 h-14 object-cover rounded border border-gray-400 dark:border-gray-700 hover:scale-105 transition"
                       />
                     </a>
                   ))}

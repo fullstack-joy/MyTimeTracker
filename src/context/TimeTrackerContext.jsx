@@ -6,6 +6,10 @@ const TimeTrackerContext = createContext();
 
 export const useTimeTracker = () => useContext(TimeTrackerContext);
 
+const PROJECTS_KEY = 'projects';
+const TASKS_KEY = 'tasks';
+const SESSIONS_KEY = 'sessions';
+
 export const TimeTrackerProvider = ({ children }) => {
   // Fix: Provide a fallback if useSettings() is undefined (e.g., if not wrapped in SettingsProvider)
   const settingsCtx = useSettings?.() || {};
@@ -17,32 +21,49 @@ export const TimeTrackerProvider = ({ children }) => {
     autoExport: false,
   };
 
-  const [projects, setProjects] = useState([]);
-  const [tasks, setTasks] = useState([]);
-  const [sessions, setSessions] = useState([]);
+  const [projects, setProjects] = useState(() => {
+    try {
+      const storedProjects = localStorage.getItem(PROJECTS_KEY);
+      return storedProjects ? JSON.parse(storedProjects) : [];
+    } catch (error) {
+      console.error("Failed to parse projects from localStorage:", error);
+      return [];
+    }
+  });
+
+  const [tasks, setTasks] = useState(() => {
+    try {
+      const storedTasks = localStorage.getItem(TASKS_KEY);
+      return storedTasks ? JSON.parse(storedTasks) : [];
+    } catch (error) {
+      console.error("Failed to parse tasks from localStorage:", error);
+      return [];
+    }
+  });
+
+  const [sessions, setSessions] = useState(() => {
+    try {
+      const storedSessions = localStorage.getItem(SESSIONS_KEY);
+      return storedSessions ? JSON.parse(storedSessions) : [];
+    } catch (error) {
+      console.error("Failed to parse sessions from localStorage:", error);
+      return [];
+    }
+  });
 
   const toastRef = useRef(null);
   const setToastExternal = (fn) => { toastRef.current = fn; };
 
   useEffect(() => {
-    const storedProjects = JSON.parse(localStorage.getItem('projects')) || [];
-    const storedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
-    const storedSessions = JSON.parse(localStorage.getItem('sessions')) || [];
-    setProjects(storedProjects);
-    setTasks(storedTasks);
-    setSessions(storedSessions);
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('projects', JSON.stringify(projects));
+    localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects));
   }, [projects]);
 
   useEffect(() => {
-    localStorage.setItem('tasks', JSON.stringify(tasks));
+    localStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
   }, [tasks]);
 
   useEffect(() => {
-    localStorage.setItem('sessions', JSON.stringify(sessions));
+    localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
   }, [sessions]);
 
   useEffect(() => {
@@ -118,7 +139,7 @@ export const TimeTrackerProvider = ({ children }) => {
       console.error('Project name cannot be empty');
       return;
     }
-    const newProject = { id: Date.now(), name };
+    const newProject = { id: Date.now(), name, completed: false }; // Ensure completed is initialized
     setProjects((prev) => [...prev, newProject]);
   };
 
@@ -127,7 +148,7 @@ export const TimeTrackerProvider = ({ children }) => {
       console.error('Task title cannot be empty');
       return;
     }
-    const newTask = { id: Date.now(), projectId, title };
+    const newTask = { id: Date.now(), projectId, title, isRunning: false }; // Ensure isRunning is initialized
     setTasks((prev) => [...prev, newTask]);
   };
 
@@ -182,11 +203,83 @@ export const TimeTrackerProvider = ({ children }) => {
     );
   };
 
+  const updateProjectName = (projectId, newName) => {
+    if (!newName.trim()) {
+      console.error('Project name cannot be empty');
+      return;
+    }
+    setProjects((prevProjects) =>
+      prevProjects.map((p) =>
+        p.id === projectId ? { ...p, name: newName } : p
+      )
+    );
+  };
+
+  const deleteProjectAndRelatedData = (projectId) => {
+    const tasksToDelete = tasks.filter(task => task.projectId === projectId);
+    const taskIdsToDelete = tasksToDelete.map(task => task.id);
+
+    setProjects((prevProjects) => prevProjects.filter(p => p.id !== projectId));
+    setTasks((prevTasks) => prevTasks.filter(task => task.projectId !== projectId));
+    setSessions((prevSessions) => prevSessions.filter(session => !taskIdsToDelete.includes(session.taskId)));
+  };
+
+  const duplicateExistingProject = (projectToDuplicate) => {
+    const newProject = { ...projectToDuplicate, id: Date.now(), name: `${projectToDuplicate.name} (Copy)`, completed: false };
+    const originalTasks = tasks.filter(t => t.projectId === projectToDuplicate.id);
+    const newTasks = originalTasks.map(t => ({
+      ...t,
+      id: Date.now() + Math.random(), // Ensure unique ID
+      projectId: newProject.id,
+      isRunning: false,
+    }));
+
+    setProjects(prev => [...prev, newProject]);
+    setTasks(prev => [...prev, ...newTasks]);
+  };
+
+  const updateTaskTitle = (taskId, newTitle) => {
+    if (!newTitle.trim()) {
+      console.error('Task title cannot be empty');
+      return;
+    }
+    setTasks((prevTasks) =>
+      prevTasks.map((t) =>
+        t.id === taskId ? { ...t, title: newTitle } : t
+      )
+    );
+  };
+
+  const deleteTaskAndRelatedData = (taskId) => {
+    setTasks((prevTasks) => prevTasks.filter(t => t.id !== taskId));
+    setSessions((prevSessions) => prevSessions.filter(s => s.taskId !== taskId));
+  };
+
+  const deleteSession = (sessionId) => {
+    setSessions((prevSessions) => prevSessions.filter(s => s.id !== sessionId));
+  };
+
+  const clearAllTrackerData = () => {
+    setProjects([]);
+    setTasks([]);
+    setSessions([]);
+    // localStorage will be cleared by the useEffect hooks when states become empty
+  };
+
+  const replaceAllTrackerData = (data) => {
+    setProjects(data.projects || []);
+    setTasks(data.tasks || []);
+    setSessions(data.sessions || []);
+  };
+
   return (
     <TimeTrackerContext.Provider value={{
       projects, tasks, sessions,
       addProject, addTask, addSession, stopSession, setToastExternal,
-      completeProject, reopenProject
+      completeProject, reopenProject,
+      updateProjectName, deleteProjectAndRelatedData, duplicateExistingProject,
+      updateTaskTitle, deleteTaskAndRelatedData,
+      deleteSession, clearAllTrackerData, replaceAllTrackerData
     }}>
       {children}
     </TimeTrackerContext.Provider>

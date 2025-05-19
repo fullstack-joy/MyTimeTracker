@@ -44,22 +44,25 @@ export default function Dashboard() {
   const activeTasks = tasks.filter(t => t.isRunning).length;
 
   return (
-    <div className="flex-1 p-6 overflow-y-auto bg-black text-white h-full">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-        <OverviewCards
-          dailyTime={dailyTime}
-          weeklyTime={weeklyTime}
-          monthlyTime={monthlyTime}
-        />
-      </div>
+    <div className="bg-white dark:bg-black text-gray-900 dark:text-white flex flex-col h-full"> {/* MODIFIED: Removed p-6 */}
+      {/* The Dashboard doesn't have a shared H1, so its content starts directly in the scrollable area */}
+      <div className="flex-grow overflow-y-auto p-6"> {/* MODIFIED: Added p-6 */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+          <OverviewCards
+            dailyTime={dailyTime}
+            weeklyTime={weeklyTime}
+            monthlyTime={monthlyTime}
+          />
+        </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          <TaskAnalysis sortedHistory={sessions} />
-          <WorkStatus />
-      </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          <WeeklyOverview data={{ weekly: weeklySessions }} />
-          <TaskListSection />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <TaskAnalysis sortedHistory={sessions} />
+            <WorkStatus />
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <WeeklyOverview data={{ weekly: weeklySessions }} />
+            <TaskListSection />
+        </div>
       </div>
     </div>
   );

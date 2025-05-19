@@ -32,7 +32,7 @@ const TaskListItem = React.memo(function TaskListItem({
 }) {
   return (
     <li
-      className="flex items-center justify-between bg-gray-800 rounded px-3 py-2 hover:bg-gray-700 transition group"
+      className="flex items-center justify-between bg-gray-200 dark:bg-gray-800 rounded px-3 py-2 hover:bg-gray-300 dark:hover:bg-gray-700 transition group"
       tabIndex={tabIndex}
       aria-label={`Task: ${task.title}${projectName ? `, Project: ${projectName}` : ''}`}
       role="listitem"
@@ -44,20 +44,20 @@ const TaskListItem = React.memo(function TaskListItem({
       }}
     >
       <div className="truncate max-w-xs flex flex-col">
-        <span className={`font-medium ${running ? 'text-green-400' : ''}`}>
+        <span className={`font-medium ${running ? 'text-green-500 dark:text-green-400' : 'text-gray-800 dark:text-gray-200'}`}>
           {task.title}
         </span>
-        <span className="ml-0 text-xs text-gray-400 truncate">
+        <span className="ml-0 text-xs text-gray-500 dark:text-gray-400 truncate">
           {projectName ? `(${projectName})` : ''}
         </span>
       </div>
       <div className="flex items-center gap-2">
-        <span className="text-xs text-gray-400 font-mono min-w-[70px] text-right">
+        <span className="text-xs text-gray-500 dark:text-gray-400 font-mono min-w-[70px] text-right">
           {formatTime(totalTime)}
         </span>
         {running ? (
           <button
-            className="ml-2 px-2 py-0.5 rounded-full bg-red-600 text-xs text-white hover:bg-red-700 flex items-center gap-1"
+            className="ml-2 px-2 py-0.5 rounded-full bg-red-500 dark:bg-red-600 text-xs text-white hover:bg-red-600 dark:hover:bg-red-700 flex items-center gap-1"
             onClick={() => onStop(task.id)}
             title="Stop Timer"
             aria-label={`Stop timer for ${task.title}`}
@@ -66,7 +66,7 @@ const TaskListItem = React.memo(function TaskListItem({
           </button>
         ) : (
           <button
-            className="ml-2 px-2 py-0.5 rounded-full bg-green-600 text-xs text-white hover:bg-green-700 flex items-center gap-1"
+            className="ml-2 px-2 py-0.5 rounded-full bg-green-500 dark:bg-green-600 text-xs text-white hover:bg-green-600 dark:hover:bg-green-700 flex items-center gap-1"
             onClick={() => onStart(task.id)}
             title="Start Timer"
             aria-label={`Start timer for ${task.title}`}
@@ -75,7 +75,7 @@ const TaskListItem = React.memo(function TaskListItem({
           </button>
         )}
         {running && (
-          <span className="ml-2 px-2 py-0.5 rounded-full bg-green-600 text-xs text-white animate-pulse">
+          <span className="ml-2 px-2 py-0.5 rounded-full bg-green-500 dark:bg-green-600 text-xs text-white animate-pulse">
             Running
           </span>
         )}
@@ -121,12 +121,12 @@ export default function TaskListSection() {
   const isTaskRunning = (task) => !!task.isRunning;
 
   return (
-    <div className="bg-[#1f1f1f] p-5 rounded-xl shadow text-white" role="region" aria-label="Task List">
-      <h2 className="text-lg font-semibold mb-4">My Tasks</h2>
+    <div className="bg-gray-50 dark:bg-[#1f1f1f] p-5 rounded-xl shadow text-gray-900 dark:text-white" role="region" aria-label="Task List">
+      <h2 className="text-lg font-semibold mb-4 text-gray-800 dark:text-white">My Tasks</h2>
       {sortedTasks.length === 0 ? (
-        <p className="text-gray-400 text-sm">No tasks found. Add a task from the Projects page.</p>
+        <p className="text-gray-500 dark:text-gray-400 text-sm">No tasks found. Add a task from the Projects page.</p>
       ) : (
-        <ul className="space-y-3 text-sm text-gray-300" role="list">
+        <ul className="space-y-3 text-sm" role="list">
           {sortedTasks.map((task, idx) => (
             <TaskListItem
               key={task.id}

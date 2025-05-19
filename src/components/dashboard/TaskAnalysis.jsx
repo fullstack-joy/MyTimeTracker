@@ -28,15 +28,15 @@ export default function TaskAnalysis() {
   const hasData = taskSummary.length > 0;
 
   return (
-    <div className="bg-[#1f1f1f] p-5 rounded-xl shadow text-white">
-      <h2 className="text-lg font-semibold mb-4">Task Analysis</h2>
+    <div className="bg-gray-50 dark:bg-[#1f1f1f] p-5 rounded-xl shadow text-gray-900 dark:text-white">
+      <h2 className="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Task Analysis</h2>
       {!hasData ? (
-        <p className="text-gray-400 text-sm">No task activity found.</p>
+        <p className="text-gray-500 dark:text-gray-400 text-sm">No task activity found.</p>
       ) : (
-        <ul className="space-y-3 text-sm text-gray-300">
+        <ul className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
           {taskSummary.map(({ task, project, duration }, idx) => (
             <li key={idx} className="flex justify-between">
-              <span>{task} <span className="text-gray-500">({project})</span></span>
+              <span>{task} <span className="text-gray-500 dark:text-gray-500">({project})</span></span>
               <span>{(duration / 3600).toFixed(2)} hr</span>
             </li>
           ))}

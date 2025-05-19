@@ -4,7 +4,7 @@ import { FiChevronDown, FiChevronRight, FiCamera, FiTrash2, FiFolder } from 'rea
 import { useTimeTracker } from '../context/TimeTrackerContext';
 
 export default function History() {
-  const { sessions, tasks, projects } = useTimeTracker();
+  const { sessions, tasks, projects, deleteSession } = useTimeTracker(); // Added deleteSession
   const [openIndex, setOpenIndex] = useState(null);
   const [screenshots, setScreenshots] = useState({});
   const [sessionsState, setSessionsState] = useState(sessions);
@@ -97,9 +97,7 @@ export default function History() {
   // Delete session with confirmation
   const handleDeleteSession = (sessionId) => {
     if (!window.confirm('Are you sure you want to delete this session?')) return;
-    const updatedSessions = sessionsState.filter(s => s.id !== sessionId);
-    setSessionsState(updatedSessions);
-    localStorage.setItem('sessions', JSON.stringify(updatedSessions));
+    deleteSession(sessionId);
   };
 
   // Memoize grouped logs and paginated data
@@ -131,127 +129,131 @@ export default function History() {
   );
 
   return (
-    <div className="p-6 text-white bg-black min-h-screen">
-      <h1 className="text-2xl font-bold mb-6">History</h1>
-      {/* Toggle view mode */}
-      <div className="mb-6 flex gap-3">
-        <button
-          className={`px-4 py-2 rounded-l bg-[#23232b] border border-gray-700 ${viewMode === 'date' ? 'bg-orange-500 text-white' : 'text-gray-300'}`}
-          onClick={() => { setViewMode('date'); setOpenIndex(null); setPage(1); }}
-        >
-          By Date
-        </button>
-        <button
-          className={`px-4 py-2 rounded-r bg-[#23232b] border border-gray-700 ${viewMode === 'project' ? 'bg-orange-500 text-white' : 'text-gray-300'}`}
-          onClick={() => { setViewMode('project'); setOpenIndex(null); setPage(1); }}
-        >
-          By Project
-        </button>
-      </div>
-      <div className="space-y-6">
-        {paginatedData.map((entry, index) => {
-          const totalSeconds = getGroupTotalTime(entry.logs);
-          const totalHours = Number.isFinite(totalSeconds) ? (totalSeconds / 3600).toFixed(2) : '0.00';
-          return (
-            <div key={entry.key} className="bg-[#18181b] rounded-xl shadow-lg">
-              <button
-                onClick={() => toggle(index)}
-                className="w-full text-left px-6 py-4 flex justify-between items-center hover:bg-gray-800/40 transition rounded-t-xl"
-              >
-                <span className="text-lg font-semibold flex items-center gap-2">
-                  {viewMode === 'project' && <FiFolder className="text-orange-400" />}
-                  {entry.key}
-                  <span className="ml-4 text-xs text-gray-400 font-normal">
-                    • {totalHours} hr tracked
-                  </span>
-                </span>
-                {openIndex === index ? <FiChevronDown /> : <FiChevronRight />}
-              </button>
-              {openIndex === index && (
-                <div className="px-6 pb-6 pt-2">
-                  <ul className="space-y-5">
-                    {entry.logs.map((session, i) => (
-                      <li key={i} className="bg-[#23232b] rounded-lg p-4 flex flex-col md:flex-row md:items-center gap-4 shadow border-l-4 border-orange-500 relative">
-                        <div className="flex-1">
-                          <div className="font-semibold text-base flex items-center gap-2">
-                            <FiCamera className="text-orange-400" />
-                            {getTaskName(session)}
-                          </div>
-                          <div className="text-xs text-gray-400 mt-1">
-                            {viewMode === 'date' ? getProjectName(session) : (
-                              <>
-                                <span className="font-semibold">Task:</span> {getTaskName(session)}
-                              </>
-                            )}
-                          </div>
-                          <div className="text-xs text-gray-400 mt-1">
-                            {new Date(session.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {session.endTime ? new Date(session.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Ongoing'}
-                          </div>
-                        </div>
-                        {/* Screenshots */}
-                        <div className="flex flex-wrap gap-2">
-                          {(screenshots[session.id] && screenshots[session.id].length > 0) ? (
-                            screenshots[session.id].map((file, idx) => (
-                              <a
-                                key={idx}
-                                href={`file://${file}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="block"
-                                title="View Screenshot"
-                              >
-                                <img
-                                  src={`file://${file}`}
-                                  alt="Screenshot"
-                                  className="w-20 h-14 object-cover rounded border border-gray-700 hover:scale-105 transition"
-                                />
-                              </a>
-                            ))
-                          ) : (
-                            <div className="flex items-center text-xs text-gray-500 italic px-2">
-                              No screenshot
-                            </div>
-                          )}
-                        </div>
-                        {/* Delete session button */}
-                        <button
-                          className="absolute top-2 right-2 p-2 rounded-full hover:bg-red-600 transition"
-                          title="Delete session"
-                          onClick={() => handleDeleteSession(session.id)}
-                        >
-                          <FiTrash2 className="text-red-400" />
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-      {/* Pagination controls */}
-      {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-2 mt-8">
+    <div className="text-gray-900 dark:text-white bg-white dark:bg-black flex flex-col h-full"> {/* MODIFIED: Removed p-6 */}
+      <h1 className="text-2xl font-bold mb-6 flex-shrink-0 px-6 pt-6">History</h1> {/* MODIFIED: Added px-6 pt-6 here */}
+
+      <div className="flex-grow overflow-y-auto p-6"> {/* MODIFIED: Added p-6 here */}
+        {/* Toggle view mode */}
+        <div className="mb-6 flex gap-3">
           <button
-            className="px-3 py-1 rounded bg-gray-800 text-white disabled:opacity-50"
-            onClick={() => setPage(page - 1)}
-            disabled={page === 1}
+            className={`px-4 py-2 rounded-l bg-gray-200 dark:bg-[#23232b] border border-gray-300 dark:border-gray-700 ${viewMode === 'date' ? 'bg-orange-500 text-white dark:bg-orange-500 dark:text-white' : 'text-gray-700 dark:text-gray-300'}`}
+            onClick={() => { setViewMode('date'); setOpenIndex(null); setPage(1); }}
           >
-            Prev
+            By Date
           </button>
-          <span className="text-sm text-gray-300">
-            Page {page} of {totalPages}
-          </span>
           <button
-            className="px-3 py-1 rounded bg-gray-800 text-white disabled:opacity-50"
-            onClick={() => setPage(page + 1)}
-            disabled={page === totalPages}
+            className={`px-4 py-2 rounded-r bg-gray-200 dark:bg-[#23232b] border border-gray-300 dark:border-gray-700 ${viewMode === 'project' ? 'bg-orange-500 text-white dark:bg-orange-500 dark:text-white' : 'text-gray-700 dark:text-gray-300'}`}
+            onClick={() => { setViewMode('project'); setOpenIndex(null); setPage(1); }}
           >
-            Next
+            By Project
           </button>
         </div>
-      )}
+        <div className="space-y-6">
+          {paginatedData.map((entry, index) => {
+            const totalSeconds = getGroupTotalTime(entry.logs);
+            const totalHours = Number.isFinite(totalSeconds) ? (totalSeconds / 3600).toFixed(2) : '0.00';
+            return (
+              <div key={entry.key} className="bg-gray-100 dark:bg-[#18181b] rounded-xl shadow-lg">
+                <button
+                  onClick={() => toggle(index)}
+                  className="w-full text-left px-6 py-4 flex justify-between items-center hover:bg-gray-200/40 dark:hover:bg-gray-800/40 transition rounded-t-xl"
+                >
+                  <span className="text-lg font-semibold flex items-center gap-2 text-gray-800 dark:text-white">
+                    {viewMode === 'project' && <FiFolder className="text-orange-400" />}
+                    {entry.key}
+                    <span className="ml-4 text-xs text-gray-500 dark:text-gray-400 font-normal">
+                      • {totalHours} hr tracked
+                    </span>
+                  </span>
+                  {openIndex === index ? <FiChevronDown className="text-gray-600 dark:text-gray-300" /> : <FiChevronRight className="text-gray-600 dark:text-gray-300" />}
+                </button>
+                {openIndex === index && (
+                  <div className="px-6 pb-6 pt-2">
+                    <ul className="space-y-5">
+                      {entry.logs.map((session, i) => (
+                        <li key={i} className="bg-gray-200 dark:bg-[#23232b] rounded-lg p-4 flex flex-col md:flex-row md:items-center gap-4 shadow border-l-4 border-orange-500 relative">
+                          <div className="flex-1">
+                            <div className="font-semibold text-base flex items-center gap-2 text-gray-800 dark:text-white">
+                              <FiCamera className="text-orange-400" />
+                              {getTaskName(session)}
+                            </div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                              {viewMode === 'date' ? getProjectName(session) : (
+                                <>
+                                  <span className="font-semibold">Task:</span> {getTaskName(session)}
+                                </>
+                              )}
+                            </div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                              {new Date(session.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {session.endTime ? new Date(session.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Ongoing'}
+                            </div>
+                          </div>
+                          {/* Screenshots */}
+                          <div className="flex flex-wrap gap-2">
+                            {(screenshots[session.id] && screenshots[session.id].length > 0) ? (
+                              screenshots[session.id].map((file, idx) => (
+                                <a
+                                  key={idx}
+                                  href={`file://${file}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="block"
+                                  title="View Screenshot"
+                                >
+                                  <img
+                                    src={`file://${file}`}
+                                    alt="Screenshot"
+                                    className="w-20 h-14 object-cover rounded border border-gray-400 dark:border-gray-700 hover:scale-105 transition"
+                                  />
+                                </a>
+                              ))
+                            ) : (
+                              <div className="flex items-center text-xs text-gray-600 dark:text-gray-500 italic px-2">
+                                No screenshot
+                              </div>
+                            )}
+                          </div>
+                          {/* Delete session button */}
+                          <button
+                            className="absolute top-2 right-2 p-2 rounded-full hover:bg-red-500 dark:hover:bg-red-600 transition"
+                            title="Delete session"
+                            onClick={() => handleDeleteSession(session.id)}
+                            aria-label="Delete session"
+                          >
+                            <FiTrash2 className="text-red-500 dark:text-red-400" />
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        {/* Pagination controls */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-2 mt-8">
+            <button
+              className="px-3 py-1 rounded bg-gray-300 dark:bg-gray-800 text-gray-800 dark:text-white disabled:opacity-50"
+              onClick={() => setPage(page - 1)}
+              disabled={page === 1}
+            >
+              Prev
+            </button>
+            <span className="text-sm text-gray-600 dark:text-gray-300">
+              Page {page} of {totalPages}
+            </span>
+            <button
+              className="px-3 py-1 rounded bg-gray-300 dark:bg-gray-800 text-gray-800 dark:text-white disabled:opacity-50"
+              onClick={() => setPage(page + 1)}
+              disabled={page === totalPages}
+            >
+              Next
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

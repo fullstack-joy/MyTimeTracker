@@ -2,11 +2,20 @@
 import React, { useEffect } from 'react';
 
 const Toast = ({ message, type = 'info', onClose }) => {
-  const backgroundColors = {
+  // Define base colors for light mode
+  const backgroundColorsLight = {
     info: 'bg-blue-500',
     success: 'bg-green-500',
     error: 'bg-red-500',
     warning: 'bg-yellow-500',
+  };
+
+  // Define colors for dark mode (can be same or different)
+  const backgroundColorsDark = {
+    info: 'dark:bg-blue-600',
+    success: 'dark:bg-green-600',
+    error: 'dark:bg-red-600',
+    warning: 'dark:bg-yellow-600',
   };
 
   useEffect(() => {
@@ -16,7 +25,8 @@ const Toast = ({ message, type = 'info', onClose }) => {
 
   return (
     <div
-      className={`fixed bottom-4 right-4 px-4 py-2 rounded shadow-lg text-white ${backgroundColors[type]} z-50`}
+      className={`fixed bottom-4 right-4 px-4 py-2 rounded shadow-lg text-white 
+                  ${backgroundColorsLight[type]} ${backgroundColorsDark[type]} z-50`}
       role="alert"
       aria-live="assertive"
     >
